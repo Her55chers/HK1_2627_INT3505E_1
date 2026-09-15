@@ -14,6 +14,13 @@ def health():
     return jsonify({"status": "healthy"}), 200
 #curl -i http://192.168.1.175:5000/health  
 
+@app.route("/students/<string:student_id>", methods=["GET"])
+def get_student(student_id):
+    student = next((student for student in STUDENTS if student["id"] == student_id), None)
+    if student is None:
+        return jsonify({"error": "Student not found"}), 404
+    return jsonify(student), 200
+
 @app.route("/students", methods=["POST"])
 def create_student():
     data = request.get_json(silent=True)
@@ -61,6 +68,8 @@ def echo():
         return {"error": "Invalid JSON"}, 400
     return {"you_sent": data}, 200
 #curl -i -X POST http://192.168.1.175:5000/echo -H "Content-Type: application/json" -d "{\"name\":\"Tri\"}"  
+
+@app.route("/students/<string:student_id>", methods=["DELETE"])
 
 if __name__ == "__main__":
     app.run(host="192.168.1.175", port=5000, debug=True) #both wifi and localhost works fine.
