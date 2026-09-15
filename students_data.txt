@@ -1,0 +1,14 @@
+[
+    {
+        "id": "24010102",
+        "name": "Nguyen Van A",
+        "age": 20,
+        "gpa": 3.6
+    },
+    {
+        "id": "24010101",
+        "name": "Nguyen Van B",
+        "age": 21,
+        "gpa": 3.67
+    }
+]
