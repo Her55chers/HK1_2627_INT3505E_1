@@ -5,7 +5,10 @@ from flask import Flask, jsonify, request, make_response
 app = Flask(__name__)
 
 CUSTOMERS_DATA = [
-    {"id": f"customer_{i}", "name": f"customer_{i}", "email": f"customer{i}@example.com"} 
+    {"id": f"customer_{i}", 
+     "name": f"customer_{i}", 
+     "email": f"customer{i}@example.com",
+     "status": "premium" if i % 2 == 0 else "normal"} 
     for i in range(1, 67)
 ]
 
@@ -33,18 +36,24 @@ def list_books():
         return jsonify({"error": "max_page_size must be an integer"}), 400
     max_page_size = max(1, min(max_page_size, MAX_PAGE_SIZE))
 
+    customers = CUSTOMERS_DATA
+
+    id_filter = request.args.get("id")
+    status_filter = request.args.get("status")
+
+    if id_filter:
+        customers = [customer for customer in customers if customer["id"] == id_filter]
+    if status_filter:
+        customers = [customer for customer in customers if customer["status"] == status_filter]
+
     page_token = request.args.get("page_token")
-    last_id = None
 
     if page_token:
         cursor = decode_cursor(page_token)
-        if not cursor or "last_id" not in cursor:
+        if cursor is None:
             return jsonify({"error": "Invalid page_token or have expired"}), 400
         last_id = cursor["last_id"]
-
-    customers = CUSTOMERS_DATA
-    if last_id is not None:
-        customers = [customer for customer in customers if customer["id"] > last_id]
+        filtered_customers = [customer for customer in filtered_customers if customer["id"] > last_id]
 
     page = customers[:max_page_size + 1]
     has_more = len(page) > max_page_size

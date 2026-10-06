@@ -32,3 +32,6 @@ Sau khi chạy week3_lab3.py
 chạy lệnh: "curl "http://localhost:5000/books?maxPageSize=5""
 Trả về:
 ![alt text](image.png)
+Chạy lệnh: "curl "http://localhost:5000/books?status=premium&max_page_size=5"
+Trả về:
+![alt text](image_1.png)
