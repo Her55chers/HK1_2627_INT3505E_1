@@ -16,6 +16,17 @@ DEFAULT_PAGE_SIZE = 10
 MAX_PAGE_SIZE = 100
 SORTABLE_FIELDS = ["id", "name", "email", "status"]
 
+def parse_fields(raw):
+    if raw is None:
+        return SORTABLE_FIELDS, None
+    requested = list(dict.fromkeys(field.strip() for field in raw.split(",") if field.strip()))
+    if not requested:
+        return None, "fields must not be empty"
+    invalid = [field for field in requested if field not in SORTABLE_FIELDS]
+    if invalid:
+        return None, f"Invalid fields: {invalid}. Must be one of {SORTABLE_FIELDS}"
+    return requested, None
+
 def encode_cursor(sort_by, order, last_value, last_id) -> str:
     raw = json.dumps({
         "sort_by": sort_by,
@@ -45,6 +56,10 @@ def list_books():
     max_page_size = max(1, min(max_page_size, MAX_PAGE_SIZE))
 
     customers = CUSTOMERS_DATA
+
+    fields, error = parse_fields(request.args.get("fields"))
+    if error:
+        return jsonify({"error": error}), 400   
 
     sort_by = request.args.get("sort_by", "id")
     order = request.args.get("order", "asc").lower()
@@ -91,6 +106,8 @@ def list_books():
         last = results[-1]
         next_page_token = encode_cursor(sort_by, order, last[sort_by], last["id"])
 
+    results = [{field: customer[field] for field in fields} for customer in results]
+    
     return jsonify({
         "customers": results,
         "next_page_token": next_page_token,

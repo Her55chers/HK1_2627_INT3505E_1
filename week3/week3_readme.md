@@ -43,3 +43,7 @@ Và "curl "http://localhost:5000/books?status=premium&max_page_size=5&sort_by=na
 Trả về: 
 ![alt text](image.png)
 ![alt text](image.png)
+** Cài đặt sparse fields
+Chạy lệnh : "curl "http://localhost:5000/books?fields=id,name&max_page_size=3" "
+Trả về: 
+![alt text](image.png)
