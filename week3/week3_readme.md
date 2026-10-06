@@ -29,9 +29,17 @@ Sub-resource: /posts{id}/comments, /posts/{id}tags, /users/{id}/posts, users/{id
     └── /{tag_id}  GET
 *** LAB 3
 Sau khi chạy week3_lab3.py
-chạy lệnh: "curl "http://localhost:5000/books?maxPageSize=5""
+** Cài đặt Cursors
+chạy lệnh: "curl "http://localhost:5000/books?maxPageSize=5"" 
 Trả về:
 ![alt text](image.png)
+** Cài đặt Filter
 Chạy lệnh: "curl "http://localhost:5000/books?status=premium&max_page_size=5"
 Trả về:
 ![alt text](image_1.png)
+** Cài đặt Sort
+Chạy lệnh "curl "http://localhost:5000/books?status=premium&max_page_size=5&sort_by=name" "
+Và "curl "http://localhost:5000/books?status=premium&max_page_size=5&sort_by=name&page_token=<token>" "
+Trả về: 
+![alt text](image.png)
+![alt text](image.png)
