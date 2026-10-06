@@ -28,22 +28,21 @@ Sub-resource: /posts{id}/comments, /posts/{id}tags, /users/{id}/posts, users/{id
     ├── GET, POST
     └── /{tag_id}  GET
 *** LAB 3
-Sau khi chạy week3_lab3.py
 ** Cài đặt Cursors
-chạy lệnh: "curl "http://localhost:5000/books?maxPageSize=5"" 
+chạy lệnh: "curl "http://localhost:5000/books?max_page_size=5""
 Trả về:
-![alt text](/resources/image.png)
+![Cursors](resources/image.png)
+
 ** Cài đặt Filter
-Chạy lệnh: "curl "http://localhost:5000/books?status=premium&max_page_size=5"
+Chạy lệnh: "curl "http://localhost:5000/books?status=premium&max_page_size=5""
 Trả về:
-![alt text](/resources/image_1.png)
+![Filter](resources/image_1.png)
+
 ** Cài đặt Sort
-Chạy lệnh "curl "http://localhost:5000/books?status=premium&max_page_size=5&sort_by=name" "
-Và "curl "http://localhost:5000/books?status=premium&max_page_size=5&sort_by=name&page_token=<token>" "
-Trả về: 
-![alt text](/resources/image_2.png)
-![alt text](/resources/image_3.png)
+Trả về:
+![Sort trang 1](resources/image_2.png)
+![Sort trang 2](resources/image_3.png)
+
 ** Cài đặt sparse fields
-Chạy lệnh : "curl "http://localhost:5000/books?fields=id,name&max_page_size=3" "
-Trả về: 
-![alt text](/resources/image_4.png)
+Trả về:
+![Sparse fields](resources/image_4.png)
