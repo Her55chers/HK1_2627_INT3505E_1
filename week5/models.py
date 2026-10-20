@@ -94,7 +94,7 @@ class User(db.Model):
 
 class Review(db.Model):
     __tablename__ = "reviews"
-    __table_args__ = (checkConstraint("rating >= 1 AND rating <= 5", name="rating_range"),)
+    __table_args__ = (CheckConstraint("rating >= 1 AND rating <= 5", name="rating_range"),)
 
     review_id = mapped_column(Integer, primary_key=True)
     rating = mapped_column(Integer, nullable=False)
