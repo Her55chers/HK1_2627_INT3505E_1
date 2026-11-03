@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: Social Network API
+  version: 1.0.0
+  description: |
+    Spec cho 3 endpoint xác thực và đọc bài viết.
+
+servers:
+  - url: https://api.example.com/v1
+tags:
+  - name: Auth
+    description: Đăng nhập và làm mới token
+  - name: Posts
+    description: Đọc bài viết
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      tags: [Auth]
+      summary: Đăng nhập bằng email và mật khẩu
+      description: |
+        Endpoint public, phải được giới hạn tần suất theo IP và theo tài khoản.
+
+        Sai email và sai mật khẩu trả về cùng một phản hồi 401 để tránh lộ tài khoản nào tồn tại.
+        Lỗi 403 chỉ xuất hiện sau khi mật khẩu đã đúng.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenIssued'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Sai thông tin đăng nhập.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                invalid_credentials:
+                  value:
+                    type: https://api.example.com/problems/invalid-credentials
+                    title: Invalid credentials
+                    status: 401
+                    code: invalid_credentials
+                    request_id: req_01J9Z7K2
+        '403':
+          description: Mật khẩu đúng nhưng tài khoản bị khóa hoặc chưa xác minh email.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                account_suspended:
+                  value:
+                    type: https://api.example.com/problems/account-suspended
+                    title: Account suspended
+                    status: 403
+                    code: account_suspended
+                    request_id: req_01J9Z7K3
+                email_not_verified:
+                  value:
+                    type: https://api.example.com/problems/email-not-verified
+                    title: Email not verified
+                    status: 403
+                    code: email_not_verified
+                    request_id: req_01J9Z7K4
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
