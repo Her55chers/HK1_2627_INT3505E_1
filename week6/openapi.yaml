@@ -76,3 +76,61 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
+  /auth/refresh:
+    post:
+      operationId: refreshToken
+      tags: [Auth]
+      summary: Đổi refresh token lấy cặp token mới
+      description: |
+        Refresh token trong body là thông tin xác thực.
+
+        Mỗi lần gọi thành công sẽ thu hồi refresh token cũ. Nếu một token đã dùng bị gửi lại,
+        toàn bộ họ token của phiên đó bị thu hồi và người dùng phải đăng nhập lại.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenIssued'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: |
+            Refresh token không hợp lệ, hết hạn, đã bị thu hồi hoặc bị dùng lại.
+            Mọi trường hợp đều trả cùng một `code` để không lộ trạng thái token.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                invalid_refresh_token:
+                  value:
+                    type: https://api.example.com/problems/invalid-refresh-token
+                    title: Invalid refresh token
+                    status: 401
+                    code: invalid_refresh_token
+                    request_id: req_01J9Z7K5
+        '403':
+          description: Refresh token hợp lệ nhưng tài khoản đã bị khóa sau khi token được cấp.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                account_suspended:
+                  value:
+                    type: https://api.example.com/problems/account-suspended
+                    title: Account suspended
+                    status: 403
+                    code: account_suspended
+                    request_id: req_01J9Z7K6
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
