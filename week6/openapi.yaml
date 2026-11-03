@@ -5,6 +5,12 @@ info:
   description: |
     Spec cho 3 endpoint xác thực và đọc bài viết.
 
+    | Endpoint | Scope cần có | Status thành công | Status lỗi |
+    |---|---|---|---|
+    | POST /auth/login | Không | 200 | 400, 401, 403, 415, 429, 500 |
+    | POST /auth/refresh | Không  | 200 | 400, 401, 403, 415, 429, 500 |
+    | GET /posts/{id} | `posts:read` | 200 | 400, 401, 403, 404, 429, 500 |
+
 servers:
   - url: https://api.example.com/v1
 tags:
@@ -19,7 +25,7 @@ paths:
       tags: [Auth]
       summary: Đăng nhập bằng email và mật khẩu
       description: |
-        Endpoint public, phải được giới hạn tần suất theo IP và theo tài khoản.
+        **Scope:** không cần. Endpoint public, phải được giới hạn tần suất theo IP và theo tài khoản.
 
         Sai email và sai mật khẩu trả về cùng một phản hồi 401 để tránh lộ tài khoản nào tồn tại.
         Lỗi 403 chỉ xuất hiện sau khi mật khẩu đã đúng.
@@ -82,7 +88,8 @@ paths:
       tags: [Auth]
       summary: Đổi refresh token lấy cặp token mới
       description: |
-        Refresh token trong body là thông tin xác thực.
+        **Scope:** không cần access token. Refresh token trong body là thông tin xác thực.
+        Token mới có scope bằng hoặc hẹp hơn scope ban đầu.
 
         Mỗi lần gọi thành công sẽ thu hồi refresh token cũ. Nếu một token đã dùng bị gửi lại,
         toàn bộ họ token của phiên đó bị thu hồi và người dùng phải đăng nhập lại.
@@ -140,7 +147,9 @@ paths:
       tags: [Posts]
       summary: Lấy một bài viết theo ID
       description: |
-        server còn phải kiểm tra quyền của người gọi trên từng bài.
+        **Scope:** `posts:read`.
+
+        Có scope chưa đủ để đọc mọi bài: server còn phải kiểm tra quyền của người gọi trên từng bài.
         Bài riêng tư mà người gọi không được xem trả về 404 thay vì 403 để không lộ sự tồn tại của bài.
       security:
         - bearerAuth: ['posts:read']
