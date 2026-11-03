@@ -134,3 +134,92 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalError'
+  /posts/{id}:
+    get:
+      operationId: getPostById
+      tags: [Posts]
+      summary: Lấy một bài viết theo ID
+      description: |
+        server còn phải kiểm tra quyền của người gọi trên từng bài.
+        Bài riêng tư mà người gọi không được xem trả về 404 thay vì 403 để không lộ sự tồn tại của bài.
+      security:
+        - bearerAuth: ['posts:read']
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID của bài viết.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bài viết mà người gọi được phép xem.
+          headers:
+            Cache-Control:
+              description: Luôn là `private` để proxy dùng chung không lưu bài viết riêng tư.
+              schema:
+                type: string
+                const: private, max-age=0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Thiếu access token, token sai chữ ký, sai issuer hoặc audience, hoặc đã hết hạn.
+          headers:
+            WWW-Authenticate:
+              description: 'Ví dụ: `Bearer error="invalid_token"`.'
+              schema:
+                type: string
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                invalid_token:
+                  value:
+                    type: https://api.example.com/problems/invalid-token
+                    title: Invalid access token
+                    status: 401
+                    code: invalid_token
+                    request_id: req_01J9Z7K7
+        '403':
+          description: Token hợp lệ nhưng thiếu scope `posts:read`.
+          headers:
+            WWW-Authenticate:
+              description: 'Ví dụ: `Bearer error="insufficient_scope", scope="posts:read"`.'
+              schema:
+                type: string
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                insufficient_scope:
+                  value:
+                    type: https://api.example.com/problems/insufficient-scope
+                    title: Insufficient scope
+                    status: 403
+                    code: insufficient_scope
+                    request_id: req_01J9Z7K8
+        '404':
+          description: Bài không tồn tại, đã xóa, hoặc người gọi không được phép xem.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+              examples:
+                post_not_found:
+                  value:
+                    type: https://api.example.com/problems/post-not-found
+                    title: Post not found
+                    status: 404
+                    code: post_not_found
+                    request_id: req_01J9Z7K9
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
