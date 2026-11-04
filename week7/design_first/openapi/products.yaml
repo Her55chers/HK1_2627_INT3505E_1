@@ -100,6 +100,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /books:
     get:
+      operationId: books.get_books
       tags:
         - Books
       summary: Lấy danh sách sách
@@ -107,7 +108,6 @@ paths:
         Truy vấn danh sách sách trong thư viện với hỗ trợ: - **Phân trang**: `page` và `limit` - **Tìm kiếm**: theo `title` (tìm kiếm gần đúng, không phân biệt hoa/thường) - **Lọc**: theo `category_id` (mã danh mục)
 
         Kết quả trả về được sắp xếp theo `created_at` giảm dần (sách mới nhất lên đầu).
-      operationId: getBooks
       parameters:
         - name: page
           in: query
@@ -217,12 +217,12 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
+      operationId: books.create_book
       tags:
         - Books
       summary: Thêm sách mới vào thư viện
       description: |
         Tạo mới một cuốn sách trong hệ thống thư viện (yêu cầu Bearer Token).
-      operationId: createBook
       requestBody:
         required: true
         content:
@@ -244,12 +244,12 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /books/{id}:
     get:
+      operationId: books.get_book_by_id
       tags:
         - Books
       summary: Xem chi tiết một cuốn sách
       description: |
         Lấy toàn bộ thông tin chi tiết của một cuốn sách dựa theo `id` (UUID). Trả về đầy đủ các trường dữ liệu bao gồm mô tả, tác giả, danh mục, số lượng và trạng thái sẵn có.
-      operationId: getBookById
       parameters:
         - name: id
           in: path
@@ -309,12 +309,12 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     put:
+      operationId: books.update_book
       tags:
         - Books
       summary: Cập nhật thông tin sách
       description: |
         Cập nhật thông tin chi tiết của một cuốn sách theo `id` (yêu cầu Bearer Token).
-      operationId: updateBook
       parameters:
         - name: id
           in: path
@@ -346,12 +346,12 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
+      operationId: books.delete_book
       tags:
         - Books
       summary: Xóa sách khỏi thư viện
       description: |
         Xóa vĩnh viễn bản ghi sách khỏi thư viện theo `id` (yêu cầu Bearer Token).
-      operationId: deleteBook
       parameters:
         - name: id
           in: path
@@ -370,6 +370,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /authors:
