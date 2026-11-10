@@ -55,7 +55,6 @@ def update_book(id, body):
     if "category_id" in body:
         book.category_id = parse_uuid(body["category_id"], "category_id")
 
-    # Đổi tổng số lượng thì số sách sẵn có đổi theo, trừ khi client gửi giá trị cụ thể.
     quantity = body.get("quantity", book.quantity)
     available = body.get("available_quantity", book.available_quantity + quantity - book.quantity)
     if not 0 <= available <= quantity:
