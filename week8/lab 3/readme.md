@@ -31,6 +31,12 @@ Kết quả lần chạy thật: **7 request, 16 assertion, 0 fail, tổng 684 m
 └ GET /books/9999 — not found          [404 NOT FOUND]   √ 404 Not Found  √ code is NOT_FOUND with message
 ```
 
+## Ảnh chụp: chạy Newman bằng `run-newman.ps1`
+
+Chạy `run-newman.ps1` khi API đang chạy ở `127.0.0.1:5000`. Ảnh chụp cho thấy các request happy path của folder `books`: list (200) → create (201, lưu `book_id`) → read (200) → replace (200). Mọi `pm.test` đều có dấu `√`.
+
+![Newman chạy collection Lab 3](image.png)
+
 ## Cách chạy (PowerShell)
 
 **Terminal 1** — chạy Books API của starter (lần đầu cần tạo venv):
