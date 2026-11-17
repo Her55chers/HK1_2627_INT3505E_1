@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.7, pytest-9.2.0, pluggy-1.7.0 -- week8\resources\.venv\Scripts\python.exe
+rootdir: week8
+plugins: locust-2.47.0
+collecting ... collected 8 items
+
+..\lab 2\test_contract.py::test_create_response_matches_book_schema PASSED [ 12%]
+..\lab 2\test_contract.py::test_get_response_matches_book_schema PASSED  [ 25%]
+..\lab 2\test_contract.py::test_list_response_items_match_book_schema PASSED [ 37%]
+..\lab 2\test_contract.py::test_year_null_is_allowed PASSED              [ 50%]
+..\lab 2\test_contract.py::test_error_responses_match_error_schema PASSED [ 62%]
+..\lab 2\test_contract.py::test_schema_rejects_drift[<lambda>0] PASSED   [ 75%]
+..\lab 2\test_contract.py::test_schema_rejects_drift[<lambda>1] PASSED   [ 87%]
+..\lab 2\test_contract.py::test_schema_rejects_drift[<lambda>2] PASSED   [100%]
+
+============================== 8 passed in 1.15s ==============================
