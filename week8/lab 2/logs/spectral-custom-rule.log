@@ -1,0 +1,8 @@
+$ spectral lint examples/empty-200.yaml --ruleset .spectral.yml
+
+examples/empty-200.yaml
+  88:22  error  response-200-schema-not-empty  #/paths/~1books~1%7Bid%7D/get/responses/200/content/application~1json/schema: schema của response 200 không có trường nào.  paths./books/{id}.get.responses[200].content.application/json.schema
+ 104:22  error  response-200-schema-not-empty  #/paths/~1books~1%7Bid%7D/put/responses/200/content/application~1json/schema: schema của response 200 không có trường nào.  paths./books/{id}.put.responses[200].content.application/json.schema
+
+✖ 2 problems (2 errors, 0 warnings, 0 infos, 0 hints)
+exit code: 1

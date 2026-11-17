@@ -1,0 +1,3 @@
+$ spectral lint openapi.yaml --ruleset .spectral.yml
+No results with a severity of 'error' found!
+exit code: 0

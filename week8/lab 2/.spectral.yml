@@ -1,0 +1,57 @@
+# Lab 2 — Spectral ruleset cho Books API
+# Chạy: spectral lint openapi.yaml --ruleset .spectral.yml
+extends:
+  - spectral:oas
+
+rules:
+  # Lỗi 1 — mọi operation phải có operationId (spectral:oas mặc định chỉ là warning)
+  operation-operationId: error
+
+  # Lỗi 2 — response 204 No Content không được khai báo body
+  no-body-on-204:
+    description: Response 204 không được có `content`.
+    message: "{{path}}: 204 No Content không được khai báo response body."
+    severity: error
+    given: "$.paths[*][*].responses['204']"
+    then:
+      field: content
+      function: falsy
+
+  # Lỗi 3 — Book.year phải khớp model Python (db.Integer, nullable)
+  book-year-is-integer:
+    description: Book.year phải là integer (khớp models.Book.year).
+    message: "Book.year phải có type integer, đang là '{{value}}'."
+    severity: error
+    given: "$.components.schemas.Book.properties.year"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values: [integer]
+
+  # Custom rule — response 200 phải có schema với > 0 trường.
+  # Bắt các case như `schema: {}` hoặc `schema: {type: object}` không có properties:
+  # client/codegen sẽ không biết response chứa gì và contract test không kiểm được gì.
+  # Chấp nhận object có >= 1 property, hoặc array mà items là object có >= 1 property.
+  response-200-schema-not-empty:
+    description: Response 200 dạng JSON phải có schema với ít nhất 1 trường.
+    message: "{{path}}: schema của response 200 không có trường nào."
+    severity: error
+    given: "$.paths[*][*].responses['200'].content['application/json']"
+    then:
+      field: schema
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          anyOf:
+            - required: [properties]
+              properties:
+                properties: {type: object, minProperties: 1}
+            - required: [items]
+              properties:
+                items:
+                  type: object
+                  required: [properties]
+                  properties:
+                    properties: {type: object, minProperties: 1}
