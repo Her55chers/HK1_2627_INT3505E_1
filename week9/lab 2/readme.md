@@ -1,88 +1,98 @@
 # Practice 2 — Header Versioning với decorator `@api_version`
 
-Cả 3 version dùng chung một URL `GET /users/{id}`. Client chọn version qua header `X-API-Version`, và response gắn `X-API-Version-Served` để debug.
+Cùng một URL `GET /users/{id}`, client chọn version qua header `X-API-Version`:
 
-## 1. Bốn điểm cần nhớ và cách làm trong [app.py](app.py)
+- Không gửi header → dùng bản mới nhất (`2`).
+- Response luôn có `X-API-Version-Served` và `Vary: X-API-Version`.
+- Version không hỗ trợ → `400`, không fallback. User không tồn tại → `404` (code mẫu trên slide trả nhầm `200`).
 
-| # | Yêu cầu | Cách làm |
-|---|---|---|
-| ① | Decorator parse `X-API-Version`, thiếu thì dùng default | Không gửi header thì nhận `LATEST = "2"` |
-| ② | Trả header `X-API-Version-Served` | Gắn vào mọi response hợp lệ, kể cả 404 |
-| ③ | Endpoint trả dict | Handler trả `dict` hoặc `(dict, status)`; decorator lo `jsonify` |
-| ④ | Version lạ → 400, không fallback | Trả `400` kèm danh sách version hỗ trợ |
+## Cách chạy
 
-So với code mẫu trên slide, tôi sửa hai chỗ:
-
-- **User không tồn tại giờ trả 404.** Trên slide, `return {"error": "not found"}` trả HTTP **200**. Decorator nay nhận thêm dạng `(body, status)` nên trả được 404 thật.
-- **Thêm header `Vary: X-API-Version`.** Khi version nằm trong header thay vì URL, CDN hoặc proxy phải tách cache theo header này. Nếu không, client v1 có thể nhận nhầm response v2 đã được cache.
-
-## 2. Cách chạy
+Terminal 1 (server):
 
 ```powershell
-cd "week9\lab 2"
-..\..\.venv\Scripts\python app.py
+cd "C:\Users\vulin\Documents\github\HK1_2627_INT3505E_1\week9\lab 2"; ..\..\.venv\Scripts\python app.py
 ```
 
-Chạy test (**6 passed**):
+Chạy test (6 passed):
 
 ```powershell
 ..\..\.venv\Scripts\python -m pytest -v
 ```
 
-## 3. curl và kết quả
+## Kết quả
 
-Các lệnh dưới đây chạy được trong Git Bash; trên PowerShell hãy dùng `curl.exe`. Kết quả là output thật.
+Chạy các lệnh dưới trong terminal 2 (PowerShell).
 
-**Default → bản stable mới nhất (v2)**
+**curl 1:** không gửi header → v2, `200`
 
-```bash
-curl -i localhost:5000/users/1
+```powershell
+curl.exe localhost:5000/users/1
 ```
 
-```http
-HTTP/1.1 200 OK
-X-API-Version-Served: 2
-Vary: X-API-Version
-
-{"email":"a@vnu.vn","first_name":"Văn","id":1,"last_name":"Nguyễn"}
+```json
+{
+  "email": "a@vnu.vn",
+  "first_name": "Văn",
+  "id": 1,
+  "last_name": "Nguyễn"
+}
 ```
 
-**Chọn v1**
+**curl 2:** `X-API-Version: 1` → v1, `200`
 
-```bash
-curl -i -H "X-API-Version: 1" localhost:5000/users/1
+```powershell
+curl.exe localhost:5000/users/1 -H "X-API-Version: 1"
 ```
 
-```http
-HTTP/1.1 200 OK
-X-API-Version-Served: 1
-Vary: X-API-Version
-
-{"full_name":"Văn Nguyễn","id":1}
+```json
+{
+  "full_name": "Văn Nguyễn",
+  "id": 1
+}
 ```
 
-**Dated version**
+**curl 3:** dated version `2024-06-20` → `200`
 
-```bash
-curl -i -H "X-API-Version: 2024-06-20" localhost:5000/users/1
+```powershell
+curl.exe localhost:5000/users/1 -H "X-API-Version: 2024-06-20"
 ```
 
-```http
-HTTP/1.1 200 OK
-X-API-Version-Served: 2024-06-20
-Vary: X-API-Version
-
-{"email":"a@vnu.vn","first_name":"Văn","id":1,"last_name":"Nguyễn"}
+```json
+{
+  "email": "a@vnu.vn",
+  "first_name": "Văn",
+  "id": 1,
+  "last_name": "Nguyễn"
+}
 ```
 
-**Version không hỗ trợ → 400**
+**curl 4:** version không hỗ trợ → `400`
 
-```bash
-curl -i -H "X-API-Version: 99" localhost:5000/users/1
+```powershell
+curl.exe localhost:5000/users/1 -H "X-API-Version: 99"
 ```
 
-```http
-HTTP/1.1 400 BAD REQUEST
+```json
+{
+  "error": "unsupported version",
+  "requested": "99",
+  "supported": [
+    "1",
+    "2",
+    "2024-06-20"
+  ]
+}
+```
 
-{"error":"unsupported version","requested":"99","supported":["1","2","2024-06-20"]}
+**curl 5:** user không tồn tại → `404`
+
+```powershell
+curl.exe localhost:5000/users/99
+```
+
+```json
+{
+  "error": "not found"
+}
 ```
