@@ -18,3 +18,15 @@ users_data = {
         "email": "cuong.le@example.com",
     },
 }
+
+
+def create_user(first_name, last_name, email):
+    """Thêm user mới (dùng cho POST v2). full_name được suy ra để v1 vẫn đọc được."""
+    uid = max(users_data, default=0) + 1
+    users_data[uid] = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "full_name": f"{last_name} {first_name}",
+        "email": email,
+    }
+    return uid
